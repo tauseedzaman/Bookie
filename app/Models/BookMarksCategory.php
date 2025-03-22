@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class BookMarksCategory extends Model
 {
@@ -28,6 +29,16 @@ class BookMarksCategory extends Model
      */
     public function parent(): BelongsTo
     {
-        return $this->belongsTo(BookMarksCategory::class);
+        return $this->belongsTo(BookMarksCategory::class, );
+    }
+
+    /**
+     * Get all of the bookmarks for the BookMarksCategory
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function bookmarks(): HasMany
+    {
+        return $this->hasMany(BookMark::class,'category_id', 'id');
     }
 }

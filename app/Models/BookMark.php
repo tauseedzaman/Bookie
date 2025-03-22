@@ -12,7 +12,7 @@ class BookMark extends Model
 
     public function category()
     {
-        return $this->belongsTo(BookMarksCategory::class);
+        return $this->belongsTo(BookMarksCategory::class, 'category_id', 'id');
     }
 
     public function user()

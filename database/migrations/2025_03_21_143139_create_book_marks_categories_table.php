@@ -15,7 +15,7 @@ return new class extends Migration {
             $table->string('name');
             $table->string('description')->nullable();
             $table->foreignId('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->foreignId('parent_id')->references('id')->on('book_marks_categories')->onDelete('cascade');
+            $table->foreignId('parent_id')->nullable()->references('id')->on('book_marks_categories')->onDelete('cascade');
             $table->boolean('is_default')->default(false);
             $table->timestamps();
         });
