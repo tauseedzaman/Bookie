@@ -7,7 +7,7 @@
     </x-slot>
 
     <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+        <div class="max-w-6xl mx-auto sm:px-6 lg:px-8 space-y-6">
             <x-validation-errors class="mb-4" />
 
             @session('status')
@@ -26,7 +26,7 @@
                     </div>
 
                     <div class="mb-4">
-                        <x-label for="url" value="URL" />
+                        <x-label for="url" value="URL *" />
                         <x-input id="url" name="url" class="block mt-1 w-full" type="url" required autofocus />
                         <x-input-error for="url" class="mt-2" />
                     </div>
@@ -38,21 +38,21 @@
                     </div>
 
                     <div class="mb-4">
-                        <x-label for="category_id" value="Category" />
-                        <select id="category_id" name="category_id" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 sm:text-sm" onchange="toggleCustomCategory(this)">
+                        <x-label for="category" value="Category" />
+                        <select id="category" name="category" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 sm:text-sm" onchange="toggleCustomCategory(this)">
                             <option value="">Select a category</option>
                             <option value="custom">Create New Category</option>
                             @foreach ($categories as $category)
-                            <option value="{{ $category->id }}">{{ $category->name }}</option>
+                            <option value="{{ $category->name }}">{{ $category->name }}</option>
                             @endforeach
                         </select>
-                        <x-input-error for="category_id" class="mt-2" />
+                        <x-input-error for="category" class="mt-2" />
                     </div>
 
                     <div class="mb-4 hidden" id="custom-category-div">
-                        <x-label for="custom_category" value="Custom Category" />
-                        <x-input id="custom_category" name="custom_category" class="block mt-1 w-full" type="text" />
-                        <x-input-error for="custom_category" class="mt-2" />
+                        <x-label for="custom" value="Custom Category" />
+                        <x-input id="custom" name="custom" class="block mt-1 w-full" type="text" />
+                        <x-input-error for="custom" class="mt-2" />
                     </div>
 
                     <div class="flex justify-end">

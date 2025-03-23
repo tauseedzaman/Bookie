@@ -34,30 +34,42 @@
                 @if ($favoriteBookmarks->isEmpty())
                 <p class="text-gray-500 dark:text-gray-400"><i class="fas fa-exclamation-circle"></i> No favorite bookmarks yet.</p>
                 @else
-                <ul class="list-none text-gray-800 dark:text-gray-200 space-y-2">
-                    @foreach ($favoriteBookmarks as $bookmark)
-                    <li class="flex justify-between items-center">
-                        <div>
-                            <a href="{{ $bookmark->url }}" target="_blank" class="text-blue-600 dark:text-blue-400 hover:underline">
-                                <i class="fas fa-link"></i> {{ $bookmark->title }}
-                            </a>
-                            <span class="text-gray-500 dark:text-gray-400">({{ $bookmark?->category?->name ?? 'Uncategorized' }})</span>
-                        </div>
-                        <!-- Delete Button with SweetAlert -->
-                        <button onclick="confirmDelete({{ $bookmark->id }})" class="text-red-500 hover:text-red-700">
-                            <i class="fas fa-trash-alt"></i>
-                        </button>
+                <ul class="list-none text-gray-800 dark:text-gray-200 space-y-4">
+                    @php
+                    // Group bookmarks by category
+                    $groupedBookmarks = $favoriteBookmarks->groupBy(fn($bookmark) => $bookmark->category->name ?? 'Uncategorized');
+                    @endphp
 
-                        <!-- Add to Favorites with SweetAlert -->
-                        <form id="fav-form-{{ $bookmark->id }}" action="{{ route('bookmark.favorite', $bookmark->id) }}" method="POST" style="display:none;">
-                            @csrf
-                        </form>
-                        <button onclick="addToFavorites({{ $bookmark->id }})" class="text-yellow-500 hover:text-yellow-700">
-                            <i class="fas fa-star"></i>
-                        </button>
+                    @foreach ($groupedBookmarks as $category => $bookmarks)
+                    <li class="mb-4">
+                        <h5 class="text-lg font-semibold text-gray-800 dark:text-gray-200 ">
+                            <i class="fas fa-folder"></i> {{ $category }}
+                        </h5>
+                        <ul class="list-none text-gray-800 dark:text-gray-200 pl-4 space-y-2 mt-2">
+                            @foreach ($bookmarks as $bookmark)
+                            <li class="flex justify-between items-center border-b-2 pb-1 border-cyan-300">
+                                <div>
+                                    <a href="{{ $bookmark->url }}" target="_blank" class="text-blue-600 dark:text-blue-400 hover:underline">
+                                        <i class="fas fa-link"></i> {{ $bookmark->title ?? $bookmark->url }}
+                                    </a>
+                                </div>
+
+                                <!-- Unstar Button -->
+                                <button onclick="confirmUnfavorite({{ $bookmark->id }}, '{{ route('bookmark.unfavorite', $bookmark->id) }}')" class="text-yellow-500 hover:text-yellow-700">
+                                    <i class="fas fa-star"></i> <!-- Filled Star for Favorite -->
+                                </button>
+
+                                <!-- Delete Button with SweetAlert -->
+                                <button onclick="confirmDelete({{ $bookmark->id }}, '{{ route('bookmark.destroy', $bookmark->id) }}')" class="text-red-500 hover:text-red-700 ml-2">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </li>
+                            @endforeach
+                        </ul>
                     </li>
                     @endforeach
                 </ul>
+
                 @endif
             </div>
 
@@ -85,14 +97,31 @@
                         @else
                         <ul class="space-y-2">
                             @foreach ($category->bookmarks as $bookmark)
-                            <li class="flex justify-between items-center">
+                            <li class="flex justify-between items-center border-b border-b-gray-600">
                                 <div>
-                                    <a href="{{ $bookmark->url }}" target="_blank" class="text-blue-600 dark:text-blue-400 hover:underline">
-                                        <i class="fas fa-link"></i> {{ $bookmark->title }}
+                                    <a href="{{ $bookmark->url }}" target="_blank" class="text-blue-800 dark:text-blue-400 hover:underline">
+                                        <i class="fas fa-link"></i> {{ $bookmark->title ?? $bookmark->url }}
                                     </a>
                                 </div>
+
+
+                                <!-- Favorite/Unfavorite Button with SweetAlert -->
+                                @if ($bookmark->is_favorite)
+                                <!-- Unstar Button -->
+                                <button onclick="confirmUnfavorite({{ $bookmark->id }}, '{{ route('bookmark.unfavorite', $bookmark->id) }}')" class="text-gray-500 hover:text-gray-700">
+                                    <!-- Filled Star for Favorite -->
+                                    <i class="fas fa-star"></i>
+                                </button>
+                                @else
+                                <!-- Add to Favorite Button -->
+                                <button onclick="confirmFavorite({{ $bookmark->id }}, '{{ route('bookmark.favorite', $bookmark->id) }}')" class="text-yellow-500 hover:text-yellow-700">
+                                    <i class="far fa-star"></i> <!-- Empty Star for Not Favorite -->
+                                </button>
+                                @endif
+
+
                                 <!-- Delete Button with SweetAlert -->
-                                <button onclick="confirmDelete({{ $bookmark->id }})" class="text-red-500 hover:text-red-700">
+                                <button onclick="confirmDelete({{ $bookmark->id }},'{{ route('bookmark.destroy',$bookmark->id) }}')" class="text-red-500 hover:text-red-700 ml-2">
                                     <i class="fas fa-trash-alt"></i>
                                 </button>
                             </li>
@@ -110,7 +139,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        function confirmDelete(bookmarkId) {
+        function confirmDelete(bookmarkId, endpoint_url) {
             Swal.fire({
                 title: 'Are you sure?'
                 , text: "This bookmark will be permanently deleted!"
@@ -122,7 +151,7 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     const form = document.createElement('form');
-                    form.action = `{{ url('bookmark') }}/${bookmarkId}`;
+                    form.action = endpoint_url;
                     form.method = 'POST';
                     form.innerHTML = `
                         @csrf
@@ -134,23 +163,38 @@
             });
         }
 
-        function addToFavorites(bookmarkId) {
+        // Confirm Add to Favorite
+        function confirmFavorite(bookmarkId, url) {
             Swal.fire({
                 title: 'Add to Favorites?'
-                , text: "Do you want to add this bookmark to favorites?"
+                , text: 'Do you want to add this bookmark to your favorites?'
                 , icon: 'question'
                 , showCancelButton: true
                 , confirmButtonColor: '#3085d6'
                 , cancelButtonColor: '#d33'
                 , confirmButtonText: 'Yes, add it!'
+                , cancelButtonText: 'Cancel'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    document.getElementById(`fav-form-${bookmarkId}`).submit();
-                    Swal.fire(
-                        'Added!'
-                        , 'The bookmark has been added to favorites.'
-                        , 'success'
-                    );
+                    window.location.href = url;
+                }
+            });
+        }
+
+        // Confirm Unfavorite
+        function confirmUnfavorite(bookmarkId, url) {
+            Swal.fire({
+                title: 'Remove from Favorites?'
+                , text: 'Do you want to remove this bookmark from your favorites?'
+                , icon: 'warning'
+                , showCancelButton: true
+                , confirmButtonColor: '#d33'
+                , cancelButtonColor: '#3085d6'
+                , confirmButtonText: 'Yes, remove it!'
+                , cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = url;
                 }
             });
         }

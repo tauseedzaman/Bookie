@@ -22,6 +22,8 @@ class DashboardController extends Controller
         return view('dashboard', compact('favoriteBookmarks', 'categories'));
     }
 
+    
+
     public function create()
     {
         $categories = PredefinedCategory::all();
@@ -50,5 +52,37 @@ class DashboardController extends Controller
 
         return redirect()->route('dashboard');
     }
+
+    // destroy method
+    public function destroy(BookMark $bookmark)
+    {
+        $bookmark->delete();
+        session()->flash('success', 'Bookmark deleted successfully');
+        return redirect()->route('dashboard');
+    }
+
+    // add to fav
+    public function favorite($id)
+    {
+        $bookmark = BookMark::where('user_id', auth()->id())->where('id', $id)->firstOrFail();
+        $bookmark->is_favorite = true;
+        $bookmark->save();
+
+        session()->flash('success', 'Bookmark added to favorite');
+        return redirect()->route('dashboard');
+    }
+
+    // remove from fav
+    public function unfavorite($id)
+    {
+        $bookmark = BookMark::where('user_id', auth()->id())->where('id', $id)->firstOrFail();
+        $bookmark->is_favorite = false;
+        $bookmark->save();
+        session()->flash('success', 'Bookmark removed from favorite');
+        return redirect()->route('dashboard');
+    }
+
+
+
 
 }

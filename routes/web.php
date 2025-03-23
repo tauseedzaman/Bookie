@@ -19,7 +19,7 @@ Route::middleware([
     Route::delete('/delete/{bookmark}', [DashboardController::class, 'destroy'])->name('bookmark.destroy');
 
     // add to fav
-    Route::post('/favorite/{bookmark}', [DashboardController::class, 'favorite'])->name('bookmark.favorite');
+    Route::get('/favorite/{bookmark}', [DashboardController::class, 'favorite'])->name('bookmark.favorite');
     // remove from fav
-    Route::post('/unfavorite/{bookmark}', [DashboardController::class, 'unfavorite'])->name('bookmark.unfavorite');
+    Route::get('/unfavorite/{bookmark}', [DashboardController::class, 'unfavorite'])->name('bookmark.unfavorite');
 });
