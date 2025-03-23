@@ -1,5 +1,6 @@
 
-Bookie — Your Personal Bookmark manager
+Bookie — Your Personal Bookmark Manager
+![image](https://github.com/user-attachments/assets/9c83714c-b0e2-49e9-85cf-8eb49e3930a9)
 
 Here’s a list of potential features that can be added. 
 
@@ -11,7 +12,7 @@ Here’s a list of potential features that can be added.
 3. **Bulk Actions:** Support bulk favorite, unfavorite, or delete actions.
 4. **Bookmark Sorting:** Allow sorting by date added, title, or popularity.
 5. **Bookmark Notes:** Allow users to add personal notes to each bookmark.
-6. **Custom Icons:** Allow users to select or upload icons for categories.
+6. **Custom Icons:** Users can select or upload category icons.
 7. **Dark Mode:** Already implemented, but more customizable themes or a theme switcher could be added.
 
 ---
