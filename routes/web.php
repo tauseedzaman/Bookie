@@ -16,10 +16,9 @@ Route::middleware([
 
     Route::get('/new', [DashboardController::class, 'create'])->name('bookmark.create');
     Route::post('/new', [DashboardController::class, 'store'])->name('bookmark.store');
+
     Route::delete('/delete/{bookmark}', [DashboardController::class, 'destroy'])->name('bookmark.destroy');
 
-    // add to fav
     Route::get('/favorite/{bookmark}', [DashboardController::class, 'favorite'])->name('bookmark.favorite');
-    // remove from fav
     Route::get('/unfavorite/{bookmark}', [DashboardController::class, 'unfavorite'])->name('bookmark.unfavorite');
 });

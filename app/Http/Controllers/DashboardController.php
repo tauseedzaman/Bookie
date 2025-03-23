@@ -22,7 +22,7 @@ class DashboardController extends Controller
         return view('dashboard', compact('favoriteBookmarks', 'categories'));
     }
 
-    
+
 
     public function create()
     {
@@ -36,8 +36,18 @@ class DashboardController extends Controller
             'url' => 'required|url',
         ]);
 
+        if ($request->category) {
+            if ($request->category == 'custom') {
+                $_category = $request->custom;
+            } else {
+                $_category = $request->category;
+            }
+        } else {
+            $_category = 'Default';
+        }
+
         $category = BookMarksCategory::firstOrCreate([
-            'name' => $request->category ?? 'Default',
+            'name' => $_category,
             'user_id' => auth()->id(),
         ]);
 
