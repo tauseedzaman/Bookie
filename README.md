@@ -1,5 +1,5 @@
 
-Bookie — Your Personal Bookmark Manager
+# Bookie — Your Personal Bookmark Manager
 ![image](https://github.com/user-attachments/assets/9c83714c-b0e2-49e9-85cf-8eb49e3930a9)
 
 Here’s a list of potential features that can be added. 
